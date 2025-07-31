@@ -6,8 +6,9 @@
 
     <parent>
         <groupId>de.turing85</groupId>
-        <artifactId>quarkus-zeromq</artifactId>
+        <artifactId>quarkus-zeromq-quarkus-service-parent</artifactId>
         <version>999-SNAPSHOT</version>
+        <relativePath>../quarkus-service-parent</relativePath>
     </parent>
 
     <artifactId>quarkus-zeromq-service-one</artifactId>
@@ -32,62 +33,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>de.turing85</groupId>
-                <artifactId>quarkus-zeromq-bom</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <dependencies>
-        <!-- Quarkus dependencies -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-container-image-docker</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-cyclonedx</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-arc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-scheduler</artifactId>
-        </dependency>
-
-        <!-- Non-Quarkus dependencies -->
-        <dependency>
-            <groupId>de.turing85</groupId>
-            <artifactId>quarkus-zeromq-commons</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-junit5</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.truth</groupId>
-            <artifactId>truth</artifactId>
-            <version>${truth.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 </project>

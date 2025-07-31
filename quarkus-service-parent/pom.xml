@@ -1,0 +1,204 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>de.turing85</groupId>
+        <artifactId>quarkus-zeromq</artifactId>
+        <version>999-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>quarkus-zeromq-quarkus-service-parent</artifactId>
+    <name>quarkus-zeromq :: quarkus service parent</name>
+    <packaging>pom</packaging>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- phase: compile -->
+                <plugin>
+                    <groupId>${quarkus.platform.group-id}</groupId>
+                    <artifactId>quarkus-maven-plugin</artifactId>
+                    <version>${quarkus.platform.version}</version>
+                    <configuration>
+                        <jvmArgs>
+                            --add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED
+                            --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED
+                            --add-exports jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED
+                            --add-exports jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED
+                            --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED
+                            --add-exports jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED
+                            --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED
+                            --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
+                            --add-opens jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED
+                            --add-opens jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</jvmArgs>
+                        <skip>${quarkus-maven-plugin.skip}</skip>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>build</goal>
+                                <goal>generate-code</goal>
+                                <goal>generate-code-tests</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <extensions>true</extensions>
+                </plugin>
+
+                <!-- phase: package -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${build-helper-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sbom</id>
+                            <goals>
+                                <goal>attach-artifact</goal>
+                            </goals>
+                            <phase>package</phase>
+                            <configuration>
+                                <skipAttach>${quarkus.cyclonedx.skip}</skipAttach>
+                                <artifacts>
+                                    <artifact>
+                                        <file>${project.build.directory}/quarkus-run-cyclonedx.json</file>
+                                        <type>json</type>
+                                        <classifier>sbom</classifier>
+                                    </artifact>
+                                </artifacts>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${assembly-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>tar-gz-fast-jar</id>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                            <phase>package</phase>
+                            <configuration>
+                                <appendAssemblyId>false</appendAssemblyId>
+                                <inlineDescriptors>
+                                    <inlineDescriptor>
+                                        <id>tar-gz-fast-jar</id>
+                                        <includeBaseDirectory>false</includeBaseDirectory>
+                                        <formats>
+                                            <format>tar.gz</format>
+                                        </formats>
+                                        <fileSets>
+                                            <fileSet>
+                                                <outputDirectory>/</outputDirectory>
+                                                <directory>${project.build.directory}/quarkus-app</directory>
+                                                <useDefaultExcludes>false</useDefaultExcludes>
+                                            </fileSet>
+                                        </fileSets>
+                                    </inlineDescriptor>
+                                </inlineDescriptors>
+                                <skipAssembly>${attach-fast-jar.skip}</skipAssembly>
+                                <tarLongFileMode>posix</tarLongFileMode>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>tar-gz-native</id>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                            <phase>package</phase>
+                            <configuration>
+                                <appendAssemblyId>true</appendAssemblyId>
+                                <inlineDescriptors>
+                                    <inlineDescriptor>
+                                        <id>elf</id>
+                                        <includeBaseDirectory>false</includeBaseDirectory>
+                                        <formats>
+                                            <format>tar.gz</format>
+                                        </formats>
+                                        <fileSets>
+                                            <fileSet>
+                                                <outputDirectory>/</outputDirectory>
+                                                <directory>${project.build.directory}</directory>
+                                                <includes>
+                                                    <inclue>${project.build.finalName}-runner</inclue>
+                                                    <include>*.so</include>
+                                                </includes>
+                                                <useDefaultExcludes>false</useDefaultExcludes>
+                                            </fileSet>
+                                        </fileSets>
+                                    </inlineDescriptor>
+                                </inlineDescriptors>
+                                <skipAssembly>${attach-elf.skip}</skipAssembly>
+                                <tarLongFileMode>posix</tarLongFileMode>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>de.turing85</groupId>
+                <artifactId>quarkus-zeromq-bom</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Quarkus dependencies -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-container-image-docker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-cyclonedx</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-arc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-scheduler</artifactId>
+        </dependency>
+
+        <!-- Non-Quarkus dependencies -->
+        <dependency>
+            <groupId>de.turing85</groupId>
+            <artifactId>quarkus-zeromq-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.truth</groupId>
+            <artifactId>truth</artifactId>
+            <version>${truth.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
