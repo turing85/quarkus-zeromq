@@ -40,7 +40,7 @@
         <!-- Quarkus versions -->
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.24.5</quarkus.platform.version>
+        <quarkus.platform.version>3.25.0</quarkus.platform.version>
 
         <!-- Test dependency versions -->
         <truth.version>1.4.4</truth.version>
